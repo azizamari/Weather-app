@@ -1,12 +1,30 @@
+import 'package:clima/services/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
+import 'dart:math';
 
 class LocationScreen extends StatefulWidget {
+  LocationScreen({this.locationWeather});
+  final locationWeather;
   @override
   _LocationScreenState createState() => _LocationScreenState();
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+  WeatherModel weatherModel=WeatherModel();
+  double temperature;
+  String city;
+  int condition;
+  @override
+  void initState() {
+    super.initState();
+    updateUI(widget.locationWeather);
+  }
+  void updateUI(dynamic weatherData){
+    temperature=weatherData['main']['temp'];
+    city=weatherData["name"];
+    condition=weatherData["weather"][0]["id"];
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,11 +67,11 @@ class _LocationScreenState extends State<LocationScreen> {
                 child: Row(
                   children: <Widget>[
                     Text(
-                      '32°',
+                      (temperature-273.1).round().toString()+'°',
                       style: kTempTextStyle,
                     ),
                     Text(
-                      '☀️',
+                      weatherModel.getWeatherIcon(condition),
                       style: kConditionTextStyle,
                     ),
                   ],
@@ -62,8 +80,8 @@ class _LocationScreenState extends State<LocationScreen> {
               Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
-                  "It's 🍦 time in San Francisco!",
-                  textAlign: TextAlign.right,
+                  weatherModel.getMessage((temperature-273.1).toInt())+city,
+                  textAlign: TextAlign.left,
                   style: kMessageTextStyle,
                 ),
               ),
@@ -74,6 +92,4 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 }
-//var temperature=networkHelper.decodedData['main']['temp'];
-//var city=decodedData["name"];
-//var condition=decodedData["weather"][0]["id"];
+
